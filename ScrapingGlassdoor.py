@@ -1,14 +1,8 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[2]:
-
-
 from bs4 import BeautifulSoup
 import json
+from random import randint
 import re
 import requests
-from random import randint
 from time import sleep
 
 locID = 0
