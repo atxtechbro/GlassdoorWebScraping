@@ -7,7 +7,6 @@ from time import sleep
 
 locID = 0
 def turnThePage(locID):
-    global bizBook, j
     headers={'User-Agent': 'Mozilla/5.0'}
     bizBook = {}
     while True:
@@ -37,11 +36,5 @@ def turnThePage(locID):
         print(len(bizBook))
         print(bizBook)
         sleep(randint(8,13))
+        
 turnThePage(locID)
-
-
-# In[ ]:
-
-
-
-
