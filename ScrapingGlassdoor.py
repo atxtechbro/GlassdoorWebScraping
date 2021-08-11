@@ -80,9 +80,14 @@ def requestRecords(qtyPerPage, startPageSelected):
     return newEntries
 
 requestRecords(qtyPerPage=100, startPageSelected=25)
+#to run this app run the function requestRecords() and please be aware best practive is to manually increment
+#startPageSelected =+ 1 each time to retrieve an additional 100 companies. Automated solution can easily be built
+#however I do not wish to encourage potentially breaking Glassdoor ToS and the assignment was not to scrape 100% of
+#everything. However the assignment DID insist on designing a scraper which would theoretically take a totally comprehensive 100% census
+#of all companies. This should do that 99.99% which is another improvement over the first version
 
-#sample output
 """
+#sample output
 78 new records saved to /home/<USER NAME>/ScrapingChallenge/venv/bin/bizBook.txt
 0.459 % {key: value} pairs scraped and saved
 
