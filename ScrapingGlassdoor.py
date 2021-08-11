@@ -21,7 +21,7 @@ def bizBookSave():
     f = open('bizBook.txt', 'wb')
     pickle.dump(bizBook, f)
     path = os.getcwd()
-    storageLocation = (path + f.name)
+    storageLocation = (path + '/' + f.name)
     savedLength = len(bizBook)
     f.close()
     checkDiffI = savedLength - loadedLength
@@ -83,7 +83,7 @@ requestRecords(qtyPerPage=100, startPageSelected=25)
 
 #sample output
 """
-78 new records saved to /home/<USER NAME>/ScrapingChallenge/venv/binbizBook.txt
+78 new records saved to /home/<USER NAME>/ScrapingChallenge/venv/bin/bizBook.txt
 0.459 % {key: value} pairs scraped and saved
 
 {343552: 'Egencia',
