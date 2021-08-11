@@ -30,7 +30,6 @@ def bizBookSave():
 
 
 bizBookLoad()
-'axRating=5&numPerPage=101&pageRequested=6&domain=glassdoor'
 #static parts of url (Head & Tail) will never change
 head = 'https://www.glassdoor.com/seo/ajax/ugcSearch.htm?minRating=0&maxRating=5&'
 tail = '&domain=glassdoor.com&surgeHiring=false'
