@@ -1,20 +1,21 @@
 import json
+import random
 import requests
+import time
+bizBook = {}
+pageNumber = 1
+#create bizBook file and initiate pageNumber to 1
+with open('BizBook.json', 'w') as f:
+    f.write(json.dumps(bizBook))
 
-def load():
-    global bizBook
+while True:
     
     with open('BizBook.json', 'r') as f:
-        data = f.read()
-        bizBook = json.loads(data)
-    f.close()
-    return bizBook
-load() 
+        businesses = f.read()
+        bizBook = json.loads(businesses)
 
-
-def requestRecords():
-    pageNumber = round(len(bizBook) / 100)
     url = f'https://www.glassdoor.com/seo/ajax/ugcSearch.htm?minRating=0&maxRating=5&numPerPage=100&pageRequested={pageNumber}&domain=glassdoor.com&surgeHiring=false'
+    pageNumber += 1
 
     
     #avoid getting red flagged
@@ -22,33 +23,23 @@ def requestRecords():
     assert r.status_code == 200
     
     
-    #refine data further by accessing key 'results' and subKey 'employerSearchResponse'
-    JSON = json.loads(r.text)
-    #reaching a point where we have the 100 records requested in the numPerPage url parameter
-    records = JSON['employerSearchResponse']['results']
-        
-    before = len(bizBook)
+    jsonResponse = json.loads(r.text)
+    records = jsonResponse['employerSearchResponse']['results']
+    #now all our data in contained in records which are 100 mini dictionaries
+    
+    #extracting the exact corporateID, corporateName from each of the 100 records and saving them to a scannedRecords dictionary which will end up containing all of them
     scannedRecords = {}
     for rec in records:
         corporateID, corporateName = rec['id'], rec['name']
         scannedRecords[corporateID] = corporateName
-        
-        
-    newEntries = { k : scannedRecords[k] for k in set(scannedRecords) - set(bizBook) }
-    bizBook.update(scannedRecords)
-    save()
-    
-    
-    pctProg = len(bizBook) / JSON['employerSearchResponse']['numRecordsAvailable']
-    pctProg = '{:.4%}'.format(pctProg).replace('%', ' %')
-    print(pctProg, '{key: value}', 'pairs scraped and saved')
-    print(len(newEntries))
-    print(newEntries)
-
-    
-def save():
+        bizBook.update(scannedRecords) #add new data to our bizBook and save it to local storage
     with open('BizBook.json', 'w') as f:
         f.write(json.dumps(bizBook, indent = 2))
-    f.close()
     
-requestRecords()
+    #scraping progress statistics
+    mileMarker = len(bizBook)
+    destination = jsonResponse['employerSearchResponse']['numRecordsAvailable']
+    percentageComplete = mileMarker / destination
+    pctProg = '{:.4%}'.format(percentageComplete) #percentage of scraped companies
+    print(pctProg, str(mileMarker) + ' / ' + str(destination))
+    time.sleep(random.randint(5,10))
