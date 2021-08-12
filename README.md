@@ -1,21 +1,18 @@
-Scraping Glassdoor
-Linking Corporation Names and ID's thru Automated Processes
+<h1>Scraping Glassdoor<h1>
+<h2>Linking Corporation Names and ID's thru Automated Processes<h2>
+<h3>by Morgan Joyce<h3>
+ 
+<h3>Purpose<h3>
+Scrape companyID and companyName key: value pairs off of Glassdoor REST API thru a dynamic & iterative https request
 
-by Morgan Joyce
-Purpose
+<h3>Challenges<h3>
+Limited to 100 pages per request and 100 key: value pairs per page (10,000 maximum - however some industries have more, some have less)
 
-Our clients’ have an interest in receiving high quality data hard to obtain anywhere else. Scraping is a data collection method useful in situations where we have little or no custody over the source data. We need to do the groundwork of finding out which ID’s are linked to which Company’s in order to achieve high level insights for our clients’. Rather than complete this process by hand, this project’s goal is to fabricate an automated solution which can be reused. The documentation contained herein is provided to serve as a guide so we can refer to it later as needed.
-
-Challenges
-
-Glassdoor is actively trying to prevent external developers from accessing their data. Unfortunately, they seem to take a strict approach to this - and do not seem to mind inconveniencing legitimate users. Forced throughout this project to take breaks in order to avoid raising red flags
-Since there are about 500,000 companies, that means 50,000 web browser requests will have to be sent to Glassdoor servers. The main challenge here is ensuring we do not have to start over should we unexpectedly fail halfway through, and also the time expenditure in running that script. For the purposes of this project, we will not run the script to completion. It should be able to run in 8-36 hours if need be. Refer to this documentation should that ever become necessary
-
-Plan
+<h3>Plan<h3>
 We will overcome the defenses Glassdoor  has set up by mimicking the behavior of a real user. The scraping app randomly ‘sleeps’ in between HTTP requests so as not to arise suspicious activity. Since it takes a while for a regular website visitor to take up to a minute to read the 10 companies per page, we cannot go noticeably faster than them to avoid raising red flags
 The end product will be a Python dictionary with corporationID’s as its’ keys and corporationNames as its’ values. Accuracy goal is 100% and a 98% count of company population is also important so we don’t have to run this more than once per quarter or so.
 
-Assumptions
+<h3>Assumptions<h3>
 this approach to grabbing company names and ID’s ten at a time and looping through the pages will capture every single company in the Glassdoor database means we will be 98% rather than 100% successful in counting every single company
 In reality, this is extremely unlikely to be the result. Company ranking could change during the course of a 24-hour long web crawling, or new companies could be added to a place where we have already finished already. To mitigate the practical negative side effects of these unfortunate cases, we are choosing to take a specific approach to starting our iterations with this problem in mind, as outlined in the next section.
 Transformations
@@ -28,41 +25,20 @@ easiest to manage the iterations when dealing with the source page directly. The
 view-source:https://www.glassdoor.com/Explore/browse-companies.htm?overall_rating_low=0&page=1&isHiringSurge=0&locId=1&locType=N&locName=US
 In the above url, the locId field right above is what will be incremented
 
-Requirements
-Python
-Requests
-Re (regular expressions)
-JSON
+<h3>Requirements<h3>
+Python 3
+Requests[^1]
+
+*Reitz, Kenneth. 2021. “Requests 2.26.0 documentation.” Requests: HTTP for Humans™. https://docs.python-requests.org/en/master/index.html#the-user-guide
+
 
 Destination
-Working copy of this application is ready to go on my github at https://github.com/mojo-py
-I will include a sample of 500 - 1000 name, id pairs and include that with my submission in case the reviewers don’t have python but still want to check for accuracy
-
-Versions
-
-Version
-Date
-Developer
-Reviewer
-v1.0
-August 6th, 2021
-Morgan Joyce
+bizBook.json local storage solution keeps track of the data and saves it to local disk
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+v1.0 August 6th, 2021
+v2.0 August 12, 2021
+developer: Morgan Joyce
 
 
 Appendix - Sample
