@@ -3,16 +3,20 @@
 <h3>by Morgan Joyce<h3>
  
 <h3>Purpose<h3>
+ 
 Scrape companyID and companyName key: value pairs off of Glassdoor REST API thru a dynamic & iterative https request
 
 <h3>Challenges<h3>
+ 
 Limited to 100 pages per request and 100 key: value pairs per page (10,000 maximum - however some industries have more, some have less)
 
 <h3>Plan<h3>
+ 
 We will overcome the defenses Glassdoor  has set up by mimicking the behavior of a real user. The scraping app randomly ‘sleeps’ in between HTTP requests so as not to arise suspicious activity. Since it takes a while for a regular website visitor to take up to a minute to read the 10 companies per page, we cannot go noticeably faster than them to avoid raising red flags
 The end product will be a Python dictionary with corporationID’s as its’ keys and corporationNames as its’ values. Accuracy goal is 100% and a 98% count of company population is also important so we don’t have to run this more than once per quarter or so.
 
 <h3>Assumptions<h3>
+ 
 this approach to grabbing company names and ID’s ten at a time and looping through the pages will capture every single company in the Glassdoor database means we will be 98% rather than 100% successful in counting every single company
 In reality, this is extremely unlikely to be the result. Company ranking could change during the course of a 24-hour long web crawling, or new companies could be added to a place where we have already finished already. To mitigate the practical negative side effects of these unfortunate cases, we are choosing to take a specific approach to starting our iterations with this problem in mind, as outlined in the next section.
 Transformations
@@ -26,6 +30,7 @@ view-source:https://www.glassdoor.com/Explore/browse-companies.htm?overall_ratin
 In the above url, the locId field right above is what will be incremented
 
 <h3>Requirements<h3>
+ 
 Python 3
 Requests[^1]
 
