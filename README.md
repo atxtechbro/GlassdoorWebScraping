@@ -32,7 +32,7 @@ In the above url, the locId field right above is what will be incremented
 <h3>Requirements</h3>
  
 Python 3
-Requests[^1]
+Requests<sup>1</sup>
 
 *Reitz, Kenneth. 2021. “Requests 2.26.0 documentation.” Requests: HTTP for Humans™. https://docs.python-requests.org/en/master/index.html#the-user-guide
 
