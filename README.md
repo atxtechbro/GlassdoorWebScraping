@@ -35,6 +35,7 @@ Destination
 bizBook.json file keeps track of the data and saves it to local disk each time another batch of companies is returned by the query
 
 
-v1.0 August 6th, 2021
-v2.0 August 12, 2021
+v1.0 08/06/21
+v2.0 08/12/21
+v2.1 12/18/21
 developer: Morgan Joyce
