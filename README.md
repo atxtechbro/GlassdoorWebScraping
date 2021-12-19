@@ -7,7 +7,7 @@
 Job-based social media websites such as Glassdoor provide a window into the human resources of almost nearly all companies. This paradigm lends itself to some unique analytics opportunities, such as gleaning info before it becomes reflected in a quarterly earnings report or even a stock price.
 For example, if ten tenured sales professionals within the last two weeks have updated their statuses on LinkedIn to reflect their departure from a company, that could be perceived as a potential red flag investors would want to be aware of. Another example would be an institutional investor requesting ESG metrics about a midsize company, along the lines of age buckets / gender ratio’s etc.
 Before tackling some of these highly promising human resource analytics, we need to be able to document the html structure of these social media websites, and figure out a way to automatically program a Python script to extract the needed data for us.
-In addition to the documentation herein, this submission includes a Github hosted Python script with ~50 lines which promises to fulfill the requirement of a complete Glassdoor company census of ID, Name pairs. It is extremely lightweight, requiring only one external library, which is an extremely well documented library called requests<sup>1</sup>.
+In addition to the documentation herein, this submission includes a Github hosted Python script with ~50 lines which promises to fulfill the requirement of a complete Glassdoor company census of ID, Name pairs. It is extremely lightweight, requiring only one external library, which is an extremely well documented library called requests[^1].
 
 <h3>Challenges</h3>
  
@@ -31,8 +31,7 @@ Rating over and under 3.5/5 for companies for example - this would work until a 
 
 
 
-
-*Reitz, Kenneth. 2021. “Requests 2.26.0 documentation.” Requests: HTTP for Humans™. https://docs.python-requests.org/en/master/index.html#the-user-guide
+[^1]: *Reitz, Kenneth. 2021. “Requests 2.26.0 documentation.” Requests: HTTP for Humans™. https://docs.python-requests.org/en/master/index.html#the-user-guide
 
 
 Destination
