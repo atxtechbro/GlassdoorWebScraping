@@ -32,7 +32,7 @@ Rating over and under 3.5/5 for companies for example - this would work until a 
 
 
 Destination
-bizBook.json local storage solution keeps track of the data and saves it to local disk
+bizBook.json file keeps track of the data and saves it to local disk each time another batch of companies is returned by the query
 
 
 v1.0 August 6th, 2021
