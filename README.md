@@ -2,6 +2,7 @@
 <h2>Linking Corporation Names and ID's thru Automated Processes</h2>
 <h3>by Morgan Joyce</h3>
  
+ 
 <h3>Purpose</h3>
  
 Job-based social media websites such as Glassdoor provide a window into the human resources of almost nearly all companies. This paradigm lends itself to some unique analytics opportunities, such as gleaning info before it becomes reflected in a quarterly earnings report or even a stock price.
@@ -9,16 +10,12 @@ For example, if ten tenured sales professionals within the last two weeks have u
 Before tackling some of these highly promising human resource analytics, we need to be able to document the html structure of these social media websites, and figure out a way to automatically program a Python script to extract the needed data for us.
 In addition to the documentation herein, this submission includes a Github hosted Python script with ~50 lines which promises to fulfill the requirement of a complete Glassdoor company census of ID, Name pairs. It is extremely lightweight, requiring only one external library, which is an extremely well documented library called requests[^1].
 
+
 <h3>Challenges</h3>
  
-Glassdoor working against the web scraper during every phase of development
-url format needed to receive a json response very hard to find
-Ctrl+Shift+E, network tab, clear, refresh, filter for json responses and find the earliest one - that should be it
-limited to requesting 100 records per request
-Limited to 100 pages x 100 records per page = 10,000 companies
-Could parse up to 50 x 10,000 = 500,000 if we adjusted the rating parameters to scan each tenth of a 5.0 scale score
-
-
+- Glassdoor working against the web scraper during every phase of development
+- url format needed to receive a json response very hard to find (hidden intentionally perhaps)
+- rate limited to 100 pages x 100 records per page = 10,000 companies per query
 
 <h3>Plan</h3>
  
