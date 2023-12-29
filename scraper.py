@@ -11,9 +11,9 @@ sectorIndex = sectorBase + 1
 
 print('page number initialized to ', pageNumber)
 
-with open('bizBook.json', 'w') as f:
+with open('biz_book.json', 'w') as f:
     f.write(json.dumps(bizBook))
-with open('bizBook.json', 'r') as f:
+with open('biz_book.json', 'r') as f:
     businesses = f.read()
     bizBook = json.loads(businesses)
 with open('industries.json', 'r') as f:
@@ -35,7 +35,7 @@ for key in sectors.keys():
     sectorList.append(key)
 
 while True:
-    startUrl = "https://www.glassdoor.com/seo/ajax/ugcSearch.htm?minRating=0&maxRating=5&numPerPage=100&"
+    startUrl = "https://www.glassdoor.com/Reviews/index.htm?overall_rating_low=3.5&page=1&filterType=RATING_OVERALL"
 
     if pageNumber >= 100:
         pageNumber = 1
@@ -71,6 +71,6 @@ while True:
 
     print('p.', pageNumber, sectors[f'{sectorIndex}'], f'(+{collectedPairsThisPage})')
 
-    with open('bizBook.json', 'w') as f:
+    with open('biz_book.json', 'w') as f:
         f.write(json.dumps(bizBook, indent=2))
     time.sleep(random.randint(4, 5))
