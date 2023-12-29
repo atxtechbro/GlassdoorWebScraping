@@ -1,76 +1,54 @@
 import json
-import random
-import time
 
 import requests
+from bs4 import BeautifulSoup
 
-bizBook = {}
-pageNumber = 95
-sectorBase = 10000
-sectorIndex = sectorBase + 1
+# Load existing industries or start with an empty dictionary
+try:
+    with open('industries.json', 'r') as f:
+        industries = json.load(f)
+except json.JSONDecodeError:
+    industries = {}
 
-print('page number initialized to ', pageNumber)
+# Load existing companies or start with an empty dictionary
+try:
+    with open('companies.json', 'r') as f:
+        companies = json.load(f)
+except json.JSONDecodeError:
+    companies = {}
 
-with open('biz_book.json', 'w') as f:
-    f.write(json.dumps(bizBook))
-with open('biz_book.json', 'r') as f:
-    businesses = f.read()
-    bizBook = json.loads(businesses)
-with open('industries.json', 'r') as f:
-    sectors_ = f.read()
-    sectors = json.loads(sectors_)
+# Start URL
+start_url = 'https://www.glassdoor.com/Reviews/index.htm?overall_rating_low=3.5&page='
 
+# Iterate over pages
+for page in range(1, 101):  # Adjust the range as needed
+    response = requests.get(start_url + str(page))
+    soup = BeautifulSoup(response.text, 'html.parser')
 
-headers = {
-    'Accept-Encoding': 'gzip, deflate, sdch',
-    'Accept-Language': 'en-US,en;q=0.8',
-    'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    'Referer': 'http://www.wikipedia.org/',
-    'Connection': 'keep-alive',
-}
+    # Replace with your own logic to extract industries and companies
+    new_industries = soup.find_all('div', class_='industry')
+    new_companies = soup.find_all('div', class_='company')
 
-sectorList = []
-for key in sectors.keys():
-    sectorList.append(key)
+    for industry in new_industries:
+        industry_id = industry.get('id')
+        industry_name = industry.get_text()
 
-while True:
-    startUrl = "https://www.glassdoor.com/Reviews/index.htm?overall_rating_low=3.5&page=1&filterType=RATING_OVERALL"
+        # Add new industry to the dictionary if it's not already there
+        if industry_id not in industries:
+            industries[industry_id] = industry_name
 
-    if pageNumber >= 100:
-        pageNumber = 1
-        sectorIndex += 1
-    else:
-        pageNumber += 1
-        pass
-    urlAppendage = f'pageRequested={pageNumber}&domain=glassdoor.com&surgeHiring=false&sectorIds={sectorIndex}'
-    url = startUrl + urlAppendage
-    r = requests.get(url, headers=headers)  # avoid getting red flagged
-    jsonResponse = json.loads(r.text)
+    for company in new_companies:
+        company_id = company.get('id')
+        company_name = company.get_text()
 
-    if pageNumber > jsonResponse['employerSearchResponse']['numPagesAvailable']:
-        sectorIndex += 1
-        pageNumber = 1
-        urlAppendage = f'pageRequested={pageNumber}&domain=glassdoor.com&surgeHiring=false&sectorIds={sectorIndex}'
-        url = startUrl + urlAppendage
-        r = requests.get(url, headers=headers)  # avoid getting red flagged
-        jsonResponse = json.loads(r.text)
-    else:
-        pass
+        # Add new company to the dictionary if it's not already there
+        if company_id not in companies:
+            companies[company_id] = company_name
 
-    records = jsonResponse['employerSearchResponse']['results']
-    # now all our data in contained in records which are 100 mini dictionaries
+    # Save the updated industries back to the file
+    with open('industries.json', 'w') as f:
+        json.dump(industries, f, indent=2)
 
-    # extracting the exact corporateID, corporateName from each of the 100 records and saving them to a scannedRecords dictionary which will end up containing all of them
-    beforeBizBookLength = len(bizBook)
-    for rec in records:
-        corporateID, corporateName = rec['id'], rec['name']
-        bizBook[corporateID] = corporateName
-    afterBizBookLength = len(bizBook)
-    collectedPairsThisPage = afterBizBookLength - beforeBizBookLength
-
-    print('p.', pageNumber, sectors[f'{sectorIndex}'], f'(+{collectedPairsThisPage})')
-
-    with open('biz_book.json', 'w') as f:
-        f.write(json.dumps(bizBook, indent=2))
-    time.sleep(random.randint(4, 5))
+    # Save the updated companies back to the file
+    with open('companies.json', 'w') as f:
+        json.dump(companies, f, indent=2)
