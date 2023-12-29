@@ -30,15 +30,15 @@ headers = {
 
 # Your GraphQL query
 graphql_query = {
-  "operationName": "FeaturedJobsQuery",
-  "variables": {
-    "keyword": "",
-    "locationType": "COUNTRY",
-    "locationId": 1,
-    "adSlotName": "search-reviews-lf-right",
-    "numPerPage": 5
-  },
-  "query": "query FeaturedJobsQuery($keyword: String!, $locationType: LocationTypeEnum, $locationId: Int!, $adSlotName: String!, $numPerPage: Int!) { jobListings(contextHolder: {adSlotName: $adSlotName, searchParams: {numPerPage: $numPerPage, searchType: FJ, skipFeaturedJobs: true, skipUrgencyLabel: true, locationType: $locationType, locationId: $locationId, keyword: $keyword}}) { jobListings { jobview { job { listingId __typename } overview { id name: shortName squareLogoUrl(size: SMALL) __typename } rating { starRating __typename } header { ageInDays jobLink jobTitleText locationName payCurrency payPeriod payPercentile10 payPercentile90 salarySource __typename } __typename } __typename } __typename } }"
+    "operationName": "FeaturedJobsQuery",
+    "variables": {
+        "keyword": "",
+        "locationType": "COUNTRY",
+        "locationId": 1,
+        "adSlotName": "search-reviews-lf-right",
+        "numPerPage": 5
+    },
+    "query": "query FeaturedJobsQuery($keyword: String!, $locationType: LocationTypeEnum, $locationId: Int!, $adSlotName: String!, $numPerPage: Int!) { jobListings(contextHolder: {adSlotName: $adSlotName, searchParams: {numPerPage: $numPerPage, searchType: FJ, skipFeaturedJobs: true, skipUrgencyLabel: true, locationType: $locationType, locationId: $locationId, keyword: $keyword}}) { jobListings { jobview { job { listingId __typename } overview { id name: shortName squareLogoUrl(size: SMALL) __typename } rating { starRating __typename } header { ageInDays jobLink jobTitleText locationName payCurrency payPeriod payPercentile10 payPercentile90 salarySource __typename } __typename } __typename } __typename } }"
 }
 
 response = requests.post(url, headers=headers, data=json.dumps(graphql_query))
