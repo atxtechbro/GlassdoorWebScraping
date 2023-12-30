@@ -41,9 +41,9 @@ graphql_query = {
         "context": {"domain": "glassdoor.com"},
         "employerName": "a",
         "jobTitle": "a",
-        "locationId": 0,
+        "locationId": 1,
         "locationType": "",
-        "numPerPage": 4
+        "numPerPage": 10
     },
     "query": """
         query AllResultsCompanySearch(
