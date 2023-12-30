@@ -33,64 +33,93 @@ headers = {
 
 # Your GraphQL query
 graphql_query = {
-    "operationName": "FeaturedJobsQuery",
+    "operationName": "AllResultsCompanySearch",
     "variables": {
-        "keyword": "",
-        "locationType": "COUNTRY",
-        "locationId": 1,
-        "adSlotName": "search-reviews-lf-right",
-        "numPerPage": 5
+        "context": {"domain": "glassdoor.com"},
+        "employerName": "a",
+        "jobTitle": "a",
+        "locationId": 0,
+        "locationType": "",
+        "numPerPage": 4
     },
     "query": """
-        query FeaturedJobsQuery($keyword: String!, $locationType: LocationTypeEnum, $locationId: Int!, $adSlotName: String!, $numPerPage: Int!) {
-            jobListings(
-                contextHolder: {
-                    adSlotName: $adSlotName,
-                    searchParams: {
-                        numPerPage: $numPerPage,
-                        searchType: FJ,
-                        skipFeaturedJobs: true,
-                        skipUrgencyLabel: true,
-                        locationType: $locationType,
-                        locationId: $locationId,
-                        keyword: $keyword
-                    }
-                }
+        query AllResultsCompanySearch(
+            $jobTitle: String,
+            $employerName: String,
+            $locationId: Int,
+            $locationType: String,
+            $numPerPage: Int,
+            $context: Context
+        ) {
+            employerNameCompaniesData: employerSearch(
+                employerName: $employerName
+                location: {locationId: $locationId, locationType: $locationType}
+                numPerPage: $numPerPage
+                context: $context
+                sortOrder: MOSTRELEVANT
             ) {
-                jobListings {
-                    jobview {
-                        job {
-                            listingId
-                            __typename
-                        }
-                        overview {
-                            id
-                            name: shortName
-                            squareLogoUrl(size: SMALL)
-                            __typename
-                        }
-                        rating {
-                            starRating
-                            __typename
-                        }
-                        header {
-                            ageInDays
-                            jobLink
-                            jobTitleText
-                            locationName
-                            payCurrency
-                            payPeriod
-                            payPercentile10
-                            payPercentile90
-                            salarySource
-                            __typename
-                        }
+                ...CompanySearchResult
+                __typename
+            }
+            directHitCompany: employerSearch(
+                filterDirectHit: true
+                employerName: $employerName
+                location: {locationId: $locationId, locationType: $locationType}
+                context: $context
+                sortOrder: MOSTRELEVANT
+            ) {
+                ...CompanySearchResult
+                __typename
+            }
+            jobTitleCompaniesData: employerSearch(
+                jobTitle: $jobTitle
+                location: {locationId: $locationId, locationType: $locationType}
+                numPerPage: $numPerPage
+                context: $context
+                sortOrder: MOSTRELEVANT
+            ) {
+                ...CompanySearchResult
+                __typename
+            }
+        }
+
+        fragment CompanySearchResult on UgcSearchV2EmployerResult {
+            employer {
+                id
+                shortName
+                squareLogoUrl
+                headquarters
+                size
+                sizeCategory
+                overview {
+                    description
+                    __typename
+                }
+                primaryIndustry {
+                    industryId
+                    industryName
+                    __typename
+                }
+                links {
+                    overviewUrl
+                    __typename
+                }
+                counts {
+                    reviewCount
+                    salaryCount
+                    globalJobCount {
+                        jobCount
                         __typename
                     }
                     __typename
                 }
                 __typename
             }
+            employerRatings {
+                overallRating
+                __typename
+            }
+            __typename
         }
     """
 }
