@@ -6,6 +6,8 @@ import logging
 import brotli
 import requests
 
+logging.basicConfig(level=logging.INFO)
+
 url = 'https://www.glassdoor.com/graph'
 headers = {
     'authority': 'www.glassdoor.com',
@@ -138,6 +140,7 @@ with open('company_data.csv', 'a', newline='', encoding='utf-8') as csvfile:
     writer = csv.writer(csvfile)
     for result in data['data']['employerNameCompaniesData']:
         company = result['employer']
+        logging.info(f"Adding company: {company['shortName']}")
         writer.writerow([
             company['id'],
             company['shortName'],
@@ -154,7 +157,3 @@ with open('company_data.csv', 'a', newline='', encoding='utf-8') as csvfile:
             company['counts']['globalJobCount']['jobCount'],
             result['employerRatings']['overallRating']
         ])
-
-# Existing code...
-
-logging.info(data)
