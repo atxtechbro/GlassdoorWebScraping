@@ -1,3 +1,4 @@
+import csv
 import gzip
 import json
 import logging
@@ -126,4 +127,34 @@ graphql_query = {
 
 response = requests.post(url, headers=headers, data=json.dumps(graphql_query))
 data = response.json()
+
+# Existing code...
+
+response = requests.post(url, headers=headers, data=json.dumps(graphql_query))
+data = response.json()
+
+# Add the data to company_data.csv
+with open('company_data.csv', 'a', newline='', encoding='utf-8') as csvfile:
+    writer = csv.writer(csvfile)
+    for result in data['data']['employerNameCompaniesData']:
+        company = result['employer']
+        writer.writerow([
+            company['id'],
+            company['shortName'],
+            company['squareLogoUrl'],
+            company['headquarters'],
+            company['size'],
+            company['sizeCategory'],
+            company['overview']['description'],
+            company['primaryIndustry']['industryId'],
+            company['primaryIndustry']['industryName'],
+            company['links']['overviewUrl'],
+            company['counts']['reviewCount'],
+            company['counts']['salaryCount'],
+            company['counts']['globalJobCount']['jobCount'],
+            result['employerRatings']['overallRating']
+        ])
+
+# Existing code...
+
 logging.info(data)
