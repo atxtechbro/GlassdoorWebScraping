@@ -43,7 +43,7 @@ graphql_query = {
         "jobTitle": "a",
         "locationId": 1,
         "locationType": "",
-        "numPerPage": 10
+        "numPerPage": 18
     },
     "query": """
         query AllResultsCompanySearch(
