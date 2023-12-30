@@ -1,9 +1,11 @@
 import csv
-import gzip
+import itertools
 import json
 import logging
+import random
+import string
+import time
 
-import brotli
 import requests
 
 logging.basicConfig(level=logging.INFO)
@@ -34,126 +36,135 @@ headers = {
     'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
 }
 
-# Your GraphQL query
-graphql_query = {
-    "operationName": "AllResultsCompanySearch",
-    "variables": {
-        "context": {"domain": "glassdoor.com"},
-        "employerName": "a",
-        "jobTitle": "a",
-        "locationId": 1,
-        "locationType": "",
-        "numPerPage": 18
-    },
-    "query": """
-        query AllResultsCompanySearch(
-            $jobTitle: String,
-            $employerName: String,
-            $locationId: Int,
-            $locationType: String,
-            $numPerPage: Int,
-            $context: Context
-        ) {
-            employerNameCompaniesData: employerSearch(
-                employerName: $employerName
-                location: {locationId: $locationId, locationType: $locationType}
-                numPerPage: $numPerPage
-                context: $context
-                sortOrder: MOSTRELEVANT
-            ) {
-                ...CompanySearchResult
-                __typename
-            }
-            directHitCompany: employerSearch(
-                filterDirectHit: true
-                employerName: $employerName
-                location: {locationId: $locationId, locationType: $locationType}
-                context: $context
-                sortOrder: MOSTRELEVANT
-            ) {
-                ...CompanySearchResult
-                __typename
-            }
-            jobTitleCompaniesData: employerSearch(
-                jobTitle: $jobTitle
-                location: {locationId: $locationId, locationType: $locationType}
-                numPerPage: $numPerPage
-                context: $context
-                sortOrder: MOSTRELEVANT
-            ) {
-                ...CompanySearchResult
-                __typename
-            }
-        }
 
-        fragment CompanySearchResult on UgcSearchV2EmployerResult {
-            employer {
-                id
-                shortName
-                squareLogoUrl
-                headquarters
-                size
-                sizeCategory
-                overview {
-                    description
+# List of search strings
+search_strings = list(string.ascii_lowercase) + ['']
+random.shuffle(search_strings)
+
+# Set of visited companies
+visited = set()
+
+for employer_name, job_title in itertools.product(search_strings, repeat=2):
+    logging.info(f"Searching for employer_name {employer_name}* and job_title {job_title}*")
+    # Your GraphQL query
+    graphql_query = {
+        "operationName": "AllResultsCompanySearch",
+        "variables": {
+            "context": {"domain": "glassdoor.com"},
+            "employerName": employer_name,
+            "jobTitle": job_title,
+            "locationId": 1,
+            "locationType": "",
+            "numPerPage": 18
+        },
+        "query": """
+            query AllResultsCompanySearch(
+                $jobTitle: String,
+                $employerName: String,
+                $locationId: Int,
+                $locationType: String,
+                $numPerPage: Int,
+                $context: Context
+            ) {
+                employerNameCompaniesData: employerSearch(
+                    employerName: $employerName
+                    location: {locationId: $locationId, locationType: $locationType}
+                    numPerPage: $numPerPage
+                    context: $context
+                    sortOrder: MOSTRELEVANT
+                ) {
+                    ...CompanySearchResult
                     __typename
                 }
-                primaryIndustry {
-                    industryId
-                    industryName
+                directHitCompany: employerSearch(
+                    filterDirectHit: true
+                    employerName: $employerName
+                    location: {locationId: $locationId, locationType: $locationType}
+                    context: $context
+                    sortOrder: MOSTRELEVANT
+                ) {
+                    ...CompanySearchResult
                     __typename
                 }
-                links {
-                    overviewUrl
+                jobTitleCompaniesData: employerSearch(
+                    jobTitle: $jobTitle
+                    location: {locationId: $locationId, locationType: $locationType}
+                    numPerPage: $numPerPage
+                    context: $context
+                    sortOrder: MOSTRELEVANT
+                ) {
+                    ...CompanySearchResult
                     __typename
                 }
-                counts {
-                    reviewCount
-                    salaryCount
-                    globalJobCount {
-                        jobCount
+            }
+
+            fragment CompanySearchResult on UgcSearchV2EmployerResult {
+                employer {
+                    id
+                    shortName
+                    squareLogoUrl
+                    headquarters
+                    size
+                    sizeCategory
+                    overview {
+                        description
+                        __typename
+                    }
+                    primaryIndustry {
+                        industryId
+                        industryName
+                        __typename
+                    }
+                    links {
+                        overviewUrl
+                        __typename
+                    }
+                    counts {
+                        reviewCount
+                        salaryCount
+                        globalJobCount {
+                            jobCount
+                            __typename
+                        }
                         __typename
                     }
                     __typename
                 }
+                employerRatings {
+                    overallRating
+                    __typename
+                }
                 __typename
             }
-            employerRatings {
-                overallRating
-                __typename
-            }
-            __typename
-        }
-    """
-}
+        """
+    }
 
-response = requests.post(url, headers=headers, data=json.dumps(graphql_query))
-data = response.json()
+    response = requests.post(url, headers=headers, data=json.dumps(graphql_query))
+    data = response.json()
 
-# Existing code...
-
-response = requests.post(url, headers=headers, data=json.dumps(graphql_query))
-data = response.json()
-
-# Add the data to company_data.csv
-with open('company_data.csv', 'a', newline='', encoding='utf-8') as csvfile:
-    writer = csv.writer(csvfile)
-    for result in data['data']['employerNameCompaniesData']:
-        company = result['employer']
-        logging.info(f"Adding company: {company['shortName']}")
-        writer.writerow([
-            company['id'],
-            company['shortName'],
-            company['squareLogoUrl'],
-            company['headquarters'],
-            company['size'],
-            company['sizeCategory'],
-            company['overview']['description'],
-            company['primaryIndustry']['industryId'],
-            company['primaryIndustry']['industryName'],
-            company['links']['overviewUrl'],
-            company['counts']['reviewCount'],
-            company['counts']['salaryCount'],
-            company['counts']['globalJobCount']['jobCount'],
-            result['employerRatings']['overallRating']
-        ])
+    # Add the data to company_data.csv
+    with open('company_data.csv', 'a', newline='', encoding='utf-8') as csvfile:
+        writer = csv.writer(csvfile)
+        for result in data['data']['employerNameCompaniesData']:
+            company = result['employer']
+            logging.info(f"Adding company: {company['shortName']}")
+            time.sleep(1)
+            if company['id'] in visited:
+                continue
+            writer.writerow([
+                company['id'],
+                company['shortName'],
+                company['squareLogoUrl'],
+                company['headquarters'],
+                company['size'],
+                company['sizeCategory'],
+                company['overview']['description'],
+                company['primaryIndustry']['industryId'],
+                company['primaryIndustry']['industryName'],
+                company['links']['overviewUrl'],
+                company['counts']['reviewCount'],
+                company['counts']['salaryCount'],
+                company['counts']['globalJobCount']['jobCount'],
+                result['employerRatings']['overallRating']
+            ])
+            visited.add(company['id'])
