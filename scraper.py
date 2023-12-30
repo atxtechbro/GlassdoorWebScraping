@@ -5,6 +5,7 @@ import logging
 import random
 import string
 import time
+from collections import deque
 
 import requests
 
@@ -38,15 +39,24 @@ headers = {
 
 
 # List of search strings
-search_strings = list(string.ascii_lowercase) + ['']
+search_strings = deque(list(string.ascii_lowercase) + [''])
 random.shuffle(search_strings)
 
 # Set of visited companies
 visited = set()
 
-for employer_name, job_title in itertools.product(search_strings, repeat=2):
-    logging.info(f"Searching for employer_name {employer_name}* and job_title {job_title}*")
+# Variables to store the last used employerName and jobTitle
+last_employer_name = None
+last_job_title = None
+
+for _ in range(len(search_strings)**2):
+    employer_name = search_strings[0]
+    job_title = search_strings[-1]
     # Your GraphQL query
+    # Skip if the combination is the same as the last one
+    if employer_name == last_employer_name or job_title == last_job_title:
+        continue
+    logging.info(f"Searching for employer_name {employer_name}* and job_title {job_title}*")
     graphql_query = {
         "operationName": "AllResultsCompanySearch",
         "variables": {
@@ -55,7 +65,7 @@ for employer_name, job_title in itertools.product(search_strings, repeat=2):
             "jobTitle": job_title,
             "locationId": 1,
             "locationType": "",
-            "numPerPage": 18
+            "numPerPage": 10
         },
         "query": """
             query AllResultsCompanySearch(
@@ -138,6 +148,11 @@ for employer_name, job_title in itertools.product(search_strings, repeat=2):
             }
         """
     }
+    # Update the last used employerName and jobTitle
+    last_employer_name = employer_name
+    last_job_title = job_title
+    # Rotate the deque
+    search_strings.rotate()
 
     response = requests.post(url, headers=headers, data=json.dumps(graphql_query))
     data = response.json()
@@ -148,9 +163,9 @@ for employer_name, job_title in itertools.product(search_strings, repeat=2):
         for result in data['data']['employerNameCompaniesData']:
             company = result['employer']
             logging.info(f"Adding company: {company['shortName']}")
-            time.sleep(1)
             if company['id'] in visited:
                 continue
+            time.sleep(1)
             writer.writerow([
                 company['id'],
                 company['shortName'],
@@ -159,8 +174,8 @@ for employer_name, job_title in itertools.product(search_strings, repeat=2):
                 company['size'],
                 company['sizeCategory'],
                 company['overview']['description'],
-                company['primaryIndustry']['industryId'],
-                company['primaryIndustry']['industryName'],
+                # company['primaryIndustry'].get('industryId', "unclassified"),
+                # company['primaryIndustry'].get('industryName', "unclassified"), #  TODO: Fix this
                 company['links']['overviewUrl'],
                 company['counts']['reviewCount'],
                 company['counts']['salaryCount'],
